@@ -4,14 +4,11 @@ from order_book import *
 import functools
 import sys
 
-sys.stdout = open('output.txt','wt')
+sys.stdout = open('log_tests_results.txt','wt')
 
 # quantity of orders list
 list_quantity_of_sells = [9,0]
 list_quantity_of_buys = [6,0]
-
-# list_quantity_of_sells = [4]
-# list_quantity_of_buys = [3]
 
 def input_data_to_orderbook(quantity_of_sells, quantity_of_buys):
     ob = OrderBook()
@@ -226,3 +223,4 @@ def test_buy_market_order(quantity_of_sells, quantity_of_buys):
     print("Order book after insert order")
     ob.put_order(Order(0, price, quantity))
     ob.present_orderbook_with_each_order()
+
