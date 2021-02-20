@@ -3,6 +3,20 @@ import random
 from order_book import *
 import functools
 
+# quantity of orders list
+list_quantity_of_sells = [4,5,0]
+list_quantity_of_buys = [2,3,0]
+
+
+def input_data_to_orderbook(quantity_of_sells, quantity_of_buys):
+    ob = OrderBook()
+
+    orders, asks, bids, asks_aggregate, bids_aggregate  = prepare_data(quantity_of_sells, quantity_of_buys)
+    for order in orders:
+        ob.put_order(order)
+
+    return ob, orders, asks, bids, asks_aggregate, bids_aggregate
+
 def random_order():
     core = random.randint(10, 10000)
     remain = random.randint(10, 20)/random.randint(10, 30)
@@ -10,7 +24,7 @@ def random_order():
     return core, remain, quantity
 
 def prepare_data(sells, buys, unique_sells = None, unique_buys = None):
-    """Данная функция подготавливает необходимые рандомные данные, приближенные к реальным"""
+    """ Подготовка необходимых рандомных данных, приближенных к реальным"""
 
     orders = []
     if not unique_sells:
@@ -54,16 +68,13 @@ def prepare_data(sells, buys, unique_sells = None, unique_buys = None):
     return orders, asks, bids, asks_aggregate, bids_aggregate
 
 
-@pytest.mark.parametrize("quantity_of_sells", [10,30])
-@pytest.mark.parametrize("quantity_of_buys", [6,20])
+@pytest.mark.parametrize("quantity_of_sells", list_quantity_of_sells)
+@pytest.mark.parametrize("quantity_of_buys", list_quantity_of_buys)
 def test_sorting_when_all_price_of_orders_are_different(quantity_of_sells, quantity_of_buys):
-    """Тест проверяет сортировку ордеров в биржевом стакане"""
+    """Проверка сортировки ордеров в биржевом стакане"""
 
-    ob = OrderBook()
-
-    orders, asks, bids, a, b  = prepare_data(quantity_of_sells, quantity_of_buys)
-    for order in orders:
-        ob.put_order(order)
+    ob, orders, asks, bids, asks_aggregate, bids_aggregate = input_data_to_orderbook(quantity_of_sells, quantity_of_buys)
+    ob.present_orderbook_with_each_order()
 
     ask_prices = sorted([ask[0] for ask in asks], reverse=True)
     bid_prices = sorted([bid[0] for bid in bids], reverse=True)
@@ -79,16 +90,13 @@ def test_sorting_when_all_price_of_orders_are_different(quantity_of_sells, quant
         assert True, "Orderbook didnt sorted by price of bids"
 
 
-@pytest.mark.parametrize("quantity_of_sells", [10,30])
-@pytest.mark.parametrize("quantity_of_buys", [6,20])
+@pytest.mark.parametrize("quantity_of_sells", list_quantity_of_sells)
+@pytest.mark.parametrize("quantity_of_buys", list_quantity_of_buys)
 def test_aggregating_orders_by_price(quantity_of_sells, quantity_of_buys):
-    """Тест проверяет агрегацию ордеров по ценам"""
+    """Проверка агрегации ордеров по ценам"""
 
-    ob = OrderBook()
-
-    orders, asks, bids, asks_aggregate, bids_aggregate  = prepare_data(quantity_of_sells, quantity_of_buys, 2, 3)
-    for order in orders:
-        ob.put_order(order)
+    ob, orders, asks, bids, asks_aggregate, bids_aggregate = input_data_to_orderbook(quantity_of_sells, quantity_of_buys)
+    ob.present_orderbook_with_each_order()
 
     ask_quantities = sorted([ask[1] for ask in asks_aggregate], reverse=True)
     bid_quantities = sorted([bid[1] for bid in bids_aggregate], reverse=True)
@@ -104,34 +112,68 @@ def test_aggregating_orders_by_price(quantity_of_sells, quantity_of_buys):
         assert True, "Orderbook didnt true aggregate sorted by price of bids"
 
 
-@pytest.mark.parametrize("quantity_of_sells", [10,30])
-@pytest.mark.parametrize("quantity_of_buys", [6,20])
+@pytest.mark.parametrize("quantity_of_sells", list_quantity_of_sells)
+@pytest.mark.parametrize("quantity_of_buys", list_quantity_of_buys)
 def test_get_order(quantity_of_sells, quantity_of_buys):
-    """Тест проверяет получение данных заявки по идентификатору"""
-    ob = OrderBook()
+    """Проверка получения данных заявки на продажу по идентификатору"""
 
-    orders, asks, bids, asks_aggregate, bids_aggregate = prepare_data(quantity_of_sells,quantity_of_buys)
-    for order in orders:
-        ob.put_order(order)
-
+    ob, orders, asks, bids, asks_aggregate, bids_aggregate = input_data_to_orderbook(quantity_of_sells, quantity_of_buys)
     ob.present_orderbook_with_each_order()
 
     ask_ids = [ask[2] for ask in asks]
-    random_index = random.randint(0, len(ask_ids)-1)
-    random_id = ask_ids[random_index]
+    bids_ids = [bid[2] for bid in bids]
 
-    order = asks[random_index]
-    order_check = list(ob.get_order(random_id))
+    if len(ask_ids):
+        random_index = random.randint(0, len(ask_ids)-1)
+        random_id = ask_ids[random_index]
 
-    order = sorted(order, reverse=True)
-    order_check = sorted(order_check, reverse=True)
+        order = asks[random_index]
+        order_check = list(ob.get_order(random_id))
 
-    if functools.reduce(lambda i, j: i and j, map(lambda m, k: m == k, order, order_check), True):
-        assert True, "Not equal between need and exists results"
+        order = sorted(order, reverse=True)
+        order_check = sorted(order_check, reverse=True)
 
-@pytest.mark.dev0
-def test_delete_order():
-    pass
+        if functools.reduce(lambda i, j: i and j, map(lambda m, k: m == k, order, order_check), True):
+            assert True, "Not equal between need and exists results"
+    elif len(bids_ids):
+        random_index = random.randint(0, len(bids_ids)-1)
+        random_id = bids_ids[random_index]
+
+        order = bids[random_index]
+        order_check = list(ob.get_order(random_id))
+
+        order = sorted(order, reverse=True)
+        order_check = sorted(order_check, reverse=True)
+
+        if functools.reduce(lambda i, j: i and j, map(lambda m, k: m == k, order, order_check), True):
+            assert True, "Not equal between need and exists results"
+    else:
+        assert ob.get_order(1) == 'empty', "Not equal between need and exists results"
+
+@pytest.mark.parametrize("quantity_of_sells", list_quantity_of_sells)
+@pytest.mark.parametrize("quantity_of_buys", list_quantity_of_buys)
+def test_delete_order(quantity_of_sells, quantity_of_buys):
+    """Проверка снятия заявки по идентификатору"""
+
+    ob, orders, asks, bids, asks_aggregate, bids_aggregate = input_data_to_orderbook(quantity_of_sells, quantity_of_buys)
+
+    print("order book before delete order")
+    ob.present_orderbook_with_each_order()
+
+    print("order book after delete order")
+
+    ask_ids = [ask[2] for ask in asks]
+    bids_ids = [bid[2] for bid in bids]
+
+    if len(ask_ids) + len(bids_ids):
+        random_index = random.randint(1, len(ask_ids + bids_ids)-1)
+        order_id, quantity, price = ob.get_order(random_index)
+        did_delete = ob.delete_order(random_index)
+        assert ob.get_order(random_index) is None
+    else:
+        did_delete = ob.delete_order(1)
+        assert did_delete == 0
+    ob.present_orderbook_with_each_order()
 
 @pytest.mark.dev1
 def test_market_order():

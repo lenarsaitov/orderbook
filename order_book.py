@@ -73,26 +73,36 @@ class OrderBook:
             same_side[order.price].append(order)
 
     def get_order(self, index):
-        for price in self.bids.keys():
-            for j in self.bids[price]:
-                if index == j.order_id:
-                    return (j.order_id, j.quantity, j.price)
+        if len(self.asks.keys()):
+            for price in self.asks.keys():
+                for j in self.asks[price]:
+                    if index == j.order_id:
+                        return (j.order_id, j.quantity, j.price)
+        if len(self.bids.keys()):
+            for price in self.bids.keys():
+                for j in self.bids[price]:
+                    if index == j.order_id:
+                        return (j.order_id, j.quantity, j.price)
+        if len(self.bids.keys()) + len(self.asks.keys()) == 0:
+            return 'empty'
+        print("Dont exists order with this index")
+        return None
 
-        for price in self.asks.keys():
-            for j in self.asks[price]:
-                if index == j.order_id:
-                    return (j.order_id, j.quantity, j.price)
 
     def delete_order(self, index):
-        for i in self.bids.keys():
-            for j in self.bids[i]:
-                if index == j.order_id:
-                    self.bids[i].remove(j)
-
-        for i in self.asks.keys():
-            for j in self.asks[i]:
-                if index == j.order_id:
-                    self.asks[i].remove(j)
+        if len(self.bids.keys()) + len(self.asks.keys()):
+            for i in self.bids.keys():
+                for j in self.bids[i]:
+                    if index == j.order_id:
+                        self.bids[i].remove(j)
+                        return 1
+            for i in self.asks.keys():
+                for j in self.asks[i]:
+                    if index == j.order_id:
+                        self.asks[i].remove(j)
+                        return 1
+        else:
+            return 0
 
     def present_orderbook_with_each_order(self):
         self.bid_prices = sorted(self.bids.keys(), reverse=True)
@@ -187,3 +197,7 @@ if __name__ == '__main__':
     # print(ob.get_order(2))
     ob.present_orderbook_with_each_order()
     ob.snapshot_market()
+
+    print(ob.delete_order(9))
+    ob.present_orderbook_with_each_order()
+    print(ob.get_order(9))
