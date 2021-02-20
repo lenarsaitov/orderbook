@@ -37,16 +37,18 @@ class OrderBook:
         else:
             self.asks[order.price].append(order)
 
-    def present_order(self, index):
+    def get_order(self, index):
         for price in self.bids.keys():
             for j in self.bids[price]:
                 if index == j.order_id:
-                    print(f"id: {j.order_id}, quantity: {j.quantity}, price: {j.price} ")
+                    # print(f"id: {j.order_id}, quantity: {j.quantity}, price: {j.price} ")
+                    return (j.order_id, j.quantity, j.price)
 
         for price in self.asks.keys():
             for j in self.asks[price]:
                 if index == j.order_id:
-                    print(f"id: {j.order_id}, quantity: {j.quantity}, price: {j.price} ")
+                    # print(f"id: {j.order_id}, quantity: {j.quantity}, price: {j.price} ")
+                    return (j.order_id, j.quantity, j.price)
 
     def delete_order(self, index):
         for i in self.bids.keys():
@@ -86,7 +88,7 @@ class OrderBook:
         self.bid_quantities = [sum(o.quantity for o in self.bids[p]) for p in self.bid_prices]
         self.ask_quantities = [sum(o.quantity for o in self.asks[p]) for p in self.ask_prices]
 
-    def output_data(self):
+    def snapshot_market(self):
         self.aggregation_orders()
         data = defaultdict(list)
         asks_table = []
@@ -111,10 +113,7 @@ class OrderBook:
         with open("data_file.json", "w") as write_file:
             json.dump(data_json, write_file)
 
-        try:
-            return asks_table, bids_table
-        except:
-            pass
+        return asks_table, bids_table
 
     def read_json(self):
         with open("data_file.json", "r") as f:
@@ -147,4 +146,5 @@ if __name__ == '__main__':
     for order in orders:
         ob.put_order(order)
 
-    ob.present_order(2)
+    print(ob.get_order(2))
+    ob.snapshot_market()
