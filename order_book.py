@@ -47,7 +47,25 @@ class OrderBook:
                     self.asks[i].remove(j)
 
     def present_orderbook(self):
-        pass
+        self.bid_prices = sorted(self.bids.keys(), reverse=True)
+        self.ask_prices = sorted(self.asks.keys())
+
+        print("|  Id   |  Quantity  |    Price    |")
+        print('====================================')
+        if len(self.ask_prices) == 0:
+            print('                Empty             ')
+
+        for i in reversed(self.ask_prices):
+            for j in self.asks[i]:
+                print(f"|   {j.order_id}   |      {j.quantity}     |     {j.price}     |")
+
+        print('====================================')
+        if len(self.bid_prices) == 0:
+            print('                Empty             ')
+
+        for i in self.bid_prices:
+            for j in self.bids[i]:
+                print(f"|   {j.order_id}   |      {j.quantity}     |     {j.price}     |")
 
 class Order:
     def __init__(self, side, price, quantity):
@@ -75,24 +93,26 @@ if __name__ == '__main__':
     print(ob.asks)
     print(ob.bids)
 
-    for i in ob.bids.keys():
-        for j in ob.bids[i]:
-            print(j.order_id)
-    print("__")
-    for i in ob.asks.keys():
-        for j in ob.asks[i]:
-            print(j.order_id)
+    # for i in ob.bids.keys():
+    #     for j in ob.bids[i]:
+    #         print(j.order_id)
+    # print("__")
+    # for i in ob.asks.keys():
+    #     for j in ob.asks[i]:
+    #         print(j.order_id)
 
     print("____")
 
-    ob.delete_order(8)
-    ob.delete_order(1)
-    ob.delete_order(4)
+    # ob.delete_order(8)
+    # ob.delete_order(1)
+    # ob.delete_order(4)
 
-    for i in ob.bids.keys():
-        for j in ob.bids[i]:
-            print(j.order_id)
-    print("__")
-    for i in ob.asks.keys():
-        for j in ob.asks[i]:
-            print(j.order_id)
+    # for i in ob.bids.keys():
+    #     for j in ob.bids[i]:
+    #         print(j.order_id)
+    # print("__")
+    # for i in ob.asks.keys():
+    #     for j in ob.asks[i]:
+    #         print(j.order_id)
+
+    ob.present_orderbook()
