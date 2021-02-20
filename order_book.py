@@ -1,4 +1,4 @@
-
+from collections import defaultdict
 
 class OrderBook:
     def __init__(self):
@@ -7,11 +7,16 @@ class OrderBook:
         self.bid_prices = []
         self.bid_quantity = []
 
-        self.bids = []
-        self.asks = []
+        self.bids = defaultdict(list)
+        self.asks = defaultdict(list)
 
         self.initial_order = []
         self.spred = 0
+        self.order_id = 0
+
+    def raise_order_id(self):
+        self.order_id += 1
+        return self.order_id
 
     @property
     def max_bid(self):
@@ -22,6 +27,9 @@ class OrderBook:
         return min(self.asks) if self.asks else float('inf')
 
     def put_order(self, order):
+        ob.initial_order.append(order)
+        order.order_id = self.raise_order_id()
+
         if order.side == 0:
             self.bids[order.price].append(order)
         else:
@@ -39,12 +47,22 @@ class Order:
         self.side = side
         self.price = price
         self.quantity = quantity
+        self.order_id = None
 
 if __name__ == '__main__':
     ob = OrderBook()
 
-    order1 = Order(1, 61.57, 10)
-    order2 = Order(0, 57.23, 10)
+    orders = [Order(0, 61.57, 20),
+              Order(0, 57.23, 20),
+              Order(1, 62.55, 10),
+              Order(0, 60.23, 5),
+              Order(0, 61.40, 25),
+              Order(1, 61.91, 10),
+              Order(0, 59.95, 25),
+              Order(1, 62.11, 15)]
 
-    ob.initial_order.append(order1)
-    ob.put_order(ob.initial_order[0])
+    for order in orders:
+        ob.put_order(order)
+
+    print(ob.asks)
+    print(ob.bids)
