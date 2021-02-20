@@ -129,22 +129,23 @@ class Order:
         self.order_id = None
 
 if __name__ == '__main__':
-    ob = OrderBook()
-
-    orders = [Order(0, 61.57, 20),
-              Order(0, 57.23, 20),
-              Order(1, 62.55, 10),
-              Order(0, 60.23, 5),
-              Order(0, 61.40, 25),
-              Order(1, 61.91, 10),
-              Order(0, 59.95, 25),
-              Order(1, 62.11, 15),
-              Order(1, 62.11, 15),
-              Order(1, 62.11, 15)
-              ]
-
-    for order in orders:
-        ob.put_order(order)
-
-    print(ob.get_order(2))
-    ob.snapshot_market()
+    print("..start main process..")
+    # ob = OrderBook()
+    #
+    # orders = [Order(0, 61.57, 20),
+    #           Order(0, 57.23, 20),
+    #           Order(1, 62.55, 10),
+    #           Order(0, 60.23, 5),
+    #           Order(0, 61.40, 25),
+    #           Order(1, 61.91, 10),
+    #           Order(0, 59.95, 25),
+    #           Order(1, 62.11, 15),
+    #           Order(1, 62.11, 15),
+    #           Order(1, 62.11, 15)
+    #           ]
+    #
+    # for order in orders:
+    #     ob.put_order(order)
+    #
+    # print(ob.get_order(2))
+    # ob.snapshot_market()

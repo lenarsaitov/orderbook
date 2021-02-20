@@ -10,6 +10,8 @@ def random_order():
     return core, remain, quantity
 
 def prepare_data(sells, buys, unique_sells = None, unique_buys = None):
+    """Данная функция подгатавливает необходимые рандомные данные, приближенные к реальным"""
+
     orders = []
     if not unique_sells:
         unique_sells = sells
@@ -115,7 +117,7 @@ def test_get_order(quantity_of_sells, quantity_of_buys):
     ob.present_orderbook_with_each_order()
 
     ask_ids = [ask[2] for ask in asks]
-    random_index = random.randint(0, len(ask_ids))
+    random_index = random.randint(0, len(ask_ids)-1)
     random_id = ask_ids[random_index]
 
     order = asks[random_index]
