@@ -7,6 +7,8 @@ import functools
 list_quantity_of_sells = [4,5,0]
 list_quantity_of_buys = [2,3,0]
 
+# list_quantity_of_sells = [4]
+# list_quantity_of_buys = [3]
 
 def input_data_to_orderbook(quantity_of_sells, quantity_of_buys):
     ob = OrderBook()
@@ -160,8 +162,6 @@ def test_delete_order(quantity_of_sells, quantity_of_buys):
     print("order book before delete order")
     ob.present_orderbook_with_each_order()
 
-    print("order book after delete order")
-
     ask_ids = [ask[2] for ask in asks]
     bids_ids = [bid[2] for bid in bids]
 
@@ -173,8 +173,34 @@ def test_delete_order(quantity_of_sells, quantity_of_buys):
     else:
         did_delete = ob.delete_order(1)
         assert did_delete == 0
+
+    print("order book after delete order")
     ob.present_orderbook_with_each_order()
 
-@pytest.mark.dev1
-def test_market_order():
-    pass
+@pytest.mark.dev0
+@pytest.mark.parametrize("quantity_of_sells", list_quantity_of_sells)
+@pytest.mark.parametrize("quantity_of_buys", list_quantity_of_buys)
+def test_buy_market_order(quantity_of_sells, quantity_of_buys):
+    """Проверка процесса торговли при рыночном ордере"""
+
+    ob, orders, asks, bids, asks_aggregate, bids_aggregate = input_data_to_orderbook(quantity_of_sells, quantity_of_buys)
+    print()
+    print("Order book before insert order")
+    ob.present_orderbook_with_each_order()
+
+    ask_ids = [ask[2] for ask in asks]
+    bids_ids = [bid[2] for bid in bids]
+
+    if len(ask_ids):
+        order_id, quantity, price = ob.get_order(round(quantity_of_sells/2))
+    elif len(bids_ids):
+        order_id, quantity, price = ob.get_order(round(quantity_of_buys/2))
+    else:
+        orders, asks, bids, asks_aggregate, bids_aggregate = prepare_data(0, 1)
+        quantity = orders[0].quantity
+        price = orders[0].price
+
+    print(f"Insert new bids market order with {quantity} units and {price} price")
+    print("Order book after insert order")
+    ob.put_order(Order(0, price, quantity))
+    ob.present_orderbook_with_each_order()

@@ -48,7 +48,7 @@ class OrderBook:
         levels = self.bids if order.side == 1 else self.asks
         prices = sorted(levels.keys(), reverse=(order.side == 1))
         for (i, price) in enumerate(prices):
-            print(f"{i}, {price}")
+            # print(f"{i}, {price}")
             expression = order.price < price if order.side == 0 else order.price > price
 
             if (order.quantity == 0) or expression:
@@ -198,6 +198,3 @@ if __name__ == '__main__':
     ob.present_orderbook_with_each_order()
     ob.snapshot_market()
 
-    print(ob.delete_order(9))
-    ob.present_orderbook_with_each_order()
-    print(ob.get_order(9))
