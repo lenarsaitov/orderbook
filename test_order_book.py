@@ -82,7 +82,7 @@ def test_sorting_when_all_price_of_orders_are_different(quantity_of_sells, quant
     ask_prices = sorted([ask[0] for ask in asks], reverse=True)
     bid_prices = sorted([bid[0] for bid in bids], reverse=True)
 
-    asks_table, bids_table = ob.snapshot_market()
+    asks_table, bids_table = ob.snapshot_market(json_return = False)
     ask_prices_check = [ask[0] for ask in asks_table]
     bid_prices_check = [bid[0] for bid in bids_table]
 
@@ -105,7 +105,7 @@ def test_aggregating_orders_by_price(quantity_of_sells, quantity_of_buys):
     ask_quantities = sorted([ask[1] for ask in asks_aggregate], reverse=True)
     bid_quantities = sorted([bid[1] for bid in bids_aggregate], reverse=True)
 
-    asks_table, bids_table = ob.snapshot_market()
+    asks_table, bids_table = ob.snapshot_market(json_return = False)
     ask_quantities_check = sorted([ask[1] for ask in asks_table], reverse=True)
     bid_quantities_check = sorted([bid[1] for bid in bids_table], reverse=True)
 
@@ -119,7 +119,7 @@ def test_aggregating_orders_by_price(quantity_of_sells, quantity_of_buys):
 @pytest.mark.parametrize("quantity_of_sells", list_quantity_of_sells)
 @pytest.mark.parametrize("quantity_of_buys", list_quantity_of_buys)
 def test_get_order(quantity_of_sells, quantity_of_buys):
-    """Проверка получения данных заявки на продажу по идентификатору"""
+    """Проверка получения данных заявки по идентификатору"""
 
     print("\n \n           Test_get_order           ")
     ob, orders, asks, bids, asks_aggregate, bids_aggregate = input_data_to_orderbook(quantity_of_sells, quantity_of_buys)
@@ -195,7 +195,6 @@ def test_delete_order(quantity_of_sells, quantity_of_buys):
         ob.present_orderbook_with_each_order()
 
 
-@pytest.mark.dev0
 @pytest.mark.parametrize("quantity_of_sells", list_quantity_of_sells)
 @pytest.mark.parametrize("quantity_of_buys", list_quantity_of_buys)
 def test_buy_market_order(quantity_of_sells, quantity_of_buys):

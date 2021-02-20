@@ -115,7 +115,7 @@ class OrderBook:
             print('                Empty              |')
         for i in reversed(self.ask_prices):
             for j in self.asks[i]:
-                print(f"|   {j.order_id}   |      {j.quantity}     |     {j.price}     |")
+                print(f"|   {j.order_id}   |     {j.quantity}    |    {j.price}    |")
         print("___________________________________")
         # print('====================================')
         if len(self.bid_prices) == 0:
@@ -123,7 +123,7 @@ class OrderBook:
 
         for i in self.bid_prices:
             for j in self.bids[i]:
-                print(f"|   {j.order_id}   |      {j.quantity}     |     {j.price}     |")
+                print(f"|   {j.order_id}   |     {j.quantity}    |    {j.price}    |")
         print('___________________________________')
 
     def aggregation_orders(self):
@@ -132,7 +132,7 @@ class OrderBook:
         self.bid_quantities = [sum(o.quantity for o in self.bids[p]) for p in self.bid_prices]
         self.ask_quantities = [sum(o.quantity for o in self.asks[p]) for p in self.ask_prices]
 
-    def snapshot_market(self):
+    def snapshot_market(self, json_return = True):
         self.aggregation_orders()
         data = defaultdict(list)
         asks_table = []
@@ -154,10 +154,14 @@ class OrderBook:
 
         data_json = json.dumps(data)
 
+        if json_return:
+            return data_json
+        else:
+            return asks_table, bids_table
+
+    def save_json(self, data_json):
         with open("data_file.json", "w") as write_file:
             json.dump(data_json, write_file)
-
-        return asks_table, bids_table
 
     def read_json(self):
         with open("data_file.json", "r") as f:
@@ -190,12 +194,6 @@ if __name__ == '__main__':
     for order in orders:
         ob.put_order(order)
 
-    # order1 = Order(1, 62.55, 10)
-    # order2 = Order(0, 62.9, 10)
-
-    # ob.conversion(order2)
-
-    # print(ob.get_order(2))
+    print(ob.get_order(2))
     ob.present_orderbook_with_each_order()
-    ob.snapshot_market()
 
