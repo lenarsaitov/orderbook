@@ -108,22 +108,23 @@ class OrderBook:
         self.bid_prices = sorted(self.bids.keys(), reverse=True)
         self.ask_prices = sorted(self.asks.keys())
 
-        print()
+        print('___________________________________')
         print("|  Id   |  Quantity  |    Price    |")
-        print('====================================')
+        print("___________________________________")
         if len(self.ask_prices) == 0:
-            print('                Empty             ')
-
+            print('                Empty              |')
         for i in reversed(self.ask_prices):
             for j in self.asks[i]:
                 print(f"|   {j.order_id}   |      {j.quantity}     |     {j.price}     |")
-        print('====================================')
+        print("___________________________________")
+        # print('====================================')
         if len(self.bid_prices) == 0:
-            print('                Empty             ')
+            print('                Empty              |')
 
         for i in self.bid_prices:
             for j in self.bids[i]:
                 print(f"|   {j.order_id}   |      {j.quantity}     |     {j.price}     |")
+        print('___________________________________')
 
     def aggregation_orders(self):
         self.bid_prices = sorted(self.bids.keys(), reverse=True)
