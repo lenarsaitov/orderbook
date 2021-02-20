@@ -37,6 +37,17 @@ class OrderBook:
         else:
             self.asks[order.price].append(order)
 
+    def present_order(self, index):
+        for price in self.bids.keys():
+            for j in self.bids[price]:
+                if index == j.order_id:
+                    print(f"id: {j.order_id}, quantity: {j.quantity}, price: {j.price} ")
+
+        for price in self.asks.keys():
+            for j in self.asks[price]:
+                if index == j.order_id:
+                    print(f"id: {j.order_id}, quantity: {j.quantity}, price: {j.price} ")
+
     def delete_order(self, index):
         for i in self.bids.keys():
             for j in self.bids[i]:
@@ -136,20 +147,4 @@ if __name__ == '__main__':
     for order in orders:
         ob.put_order(order)
 
-    print(ob.asks)
-    print(ob.bids)
-
-    # for i in ob.bids.keys():
-    #     for j in ob.bids[i]:
-    #         print(j.order_id)
-    # print("__")
-    # for i in ob.asks.keys():
-    #     for j in ob.asks[i]:
-    #         print(j.order_id)
-
-    print("____")
-
-    ob.present_orderbook_with_each_order()
-    ob.output_data()
-    print("__")
-    ob.read_json()
+    ob.present_order(2)
