@@ -12,7 +12,7 @@ class OrderBook:
         self.bids = defaultdict(list)
         self.asks = defaultdict(list)
 
-        self.initial_order = []
+        self.initial_orders = []
         self.spred = None
         self.order_id = 0
 
@@ -29,25 +29,58 @@ class OrderBook:
         return min(self.asks) if self.asks else float('inf')
 
     def put_order(self, order):
-        self.initial_order.append(order)
+        self.initial_orders.append(order)
         order.order_id = self.raise_order_id()
 
         if order.side == 0:
-            self.bids[order.price].append(order)
+            if order.price >= self.min_ask and self.asks:
+                self.conversion(order)
+            else:
+                self.bids[order.price].append(order)
         else:
-            self.asks[order.price].append(order)
+            if order.price <= self.max_bid and self.bids:
+                self.conversion(order)
+            else:
+                self.asks[order.price].append(order)
+
+
+    def conversion(self, order):
+        levels = self.bids if order.side == 1 else self.asks
+        prices = sorted(levels.keys(), reverse=(order.side == 1))
+        for (i, price) in enumerate(prices):
+            print(f"{i}, {price}")
+            expression = order.price < price if order.side == 0 else order.price > price
+
+            if (order.quantity == 0) or expression:
+                break
+
+            orders_at_level = levels[price]
+
+            for (j, book_order) in enumerate(orders_at_level):
+                if order.quantity == 0:
+                    break
+
+                different = min(order.quantity, book_order.quantity)
+                order.quantity = max(0, order.quantity - different)
+                book_order.quantity = max(0, book_order.quantity - different)
+
+            levels[price] = [o for o in orders_at_level if o.quantity > 0]
+            if len(levels[price]) == 0:
+                levels.pop(price)
+
+        if order.quantity > 0:
+            same_side = self.bids if order.side == 0 else self.asks
+            same_side[order.price].append(order)
 
     def get_order(self, index):
         for price in self.bids.keys():
             for j in self.bids[price]:
                 if index == j.order_id:
-                    # print(f"id: {j.order_id}, quantity: {j.quantity}, price: {j.price} ")
                     return (j.order_id, j.quantity, j.price)
 
         for price in self.asks.keys():
             for j in self.asks[price]:
                 if index == j.order_id:
-                    # print(f"id: {j.order_id}, quantity: {j.quantity}, price: {j.price} ")
                     return (j.order_id, j.quantity, j.price)
 
     def delete_order(self, index):
@@ -130,22 +163,27 @@ class Order:
 
 if __name__ == '__main__':
     print("..start main process..")
-    # ob = OrderBook()
-    #
-    # orders = [Order(0, 61.57, 20),
-    #           Order(0, 57.23, 20),
-    #           Order(1, 62.55, 10),
-    #           Order(0, 60.23, 5),
-    #           Order(0, 61.40, 25),
-    #           Order(1, 61.91, 10),
-    #           Order(0, 59.95, 25),
-    #           Order(1, 62.11, 15),
-    #           Order(1, 62.11, 15),
-    #           Order(1, 62.11, 15)
-    #           ]
-    #
-    # for order in orders:
-    #     ob.put_order(order)
-    #
+    ob = OrderBook()
+
+    orders = [Order(1, 62.55, 10),
+              Order(1, 62.00, 10),
+              Order(1, 61.91, 10),
+              Order(0, 62.05, 25),
+              Order(0, 61.57, 20),
+              Order(0, 61.40, 25),
+              Order(0, 60.23, 5),
+              Order(0, 59.95, 25),
+              Order(0, 57.23, 20),
+              ]
+
+    for order in orders:
+        ob.put_order(order)
+
+    # order1 = Order(1, 62.55, 10)
+    # order2 = Order(0, 62.9, 10)
+
+    # ob.conversion(order2)
+
     # print(ob.get_order(2))
-    # ob.snapshot_market()
+    ob.present_orderbook_with_each_order()
+    ob.snapshot_market()

@@ -10,7 +10,7 @@ def random_order():
     return core, remain, quantity
 
 def prepare_data(sells, buys, unique_sells = None, unique_buys = None):
-    """Данная функция подгатавливает необходимые рандомные данные, приближенные к реальным"""
+    """Данная функция подготавливает необходимые рандомные данные, приближенные к реальным"""
 
     orders = []
     if not unique_sells:
@@ -129,9 +129,10 @@ def test_get_order(quantity_of_sells, quantity_of_buys):
     if functools.reduce(lambda i, j: i and j, map(lambda m, k: m == k, order, order_check), True):
         assert True, "Not equal between need and exists results"
 
+@pytest.mark.dev0
+def test_delete_order():
+    pass
 
-# def test_delete_order():
-#     pass
-
-# def test_market_order():
-#     pass
+@pytest.mark.dev1
+def test_market_order():
+    pass
