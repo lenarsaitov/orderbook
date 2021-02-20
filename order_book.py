@@ -3,9 +3,9 @@ from collections import defaultdict
 class OrderBook:
     def __init__(self):
         self.ask_prices = []
-        self.ask_quantity = []
+        self.ask_quantity = defaultdict(list)
         self.bid_prices = []
-        self.bid_quantity = []
+        self.bid_quantity = defaultdict(list)
 
         self.bids = defaultdict(list)
         self.asks = defaultdict(list)
@@ -27,7 +27,7 @@ class OrderBook:
         return min(self.asks) if self.asks else float('inf')
 
     def put_order(self, order):
-        ob.initial_order.append(order)
+        self.initial_order.append(order)
         order.order_id = self.raise_order_id()
 
         if order.side == 0:
@@ -50,6 +50,21 @@ class OrderBook:
         self.bid_prices = sorted(self.bids.keys(), reverse=True)
         self.ask_prices = sorted(self.asks.keys())
 
+        for price in self.bid_prices:
+            sum_order_this_price = 0
+            for orders in self.bids[price]:
+                sum_order_this_price += orders.quantity
+            self.bid_quantity[price].append(sum_order_this_price)
+
+        for price in self.ask_prices:
+            sum_order_this_price = 0
+            for orders in self.asks[price]:
+                sum_order_this_price += orders.quantity
+            self.ask_quantity[price].append(sum_order_this_price)
+
+        # self.bid_quantities = [sum(k.size for k in self.bids[t]) for t in self.bid_prices]
+        # self.ask_quantities = [sum(k.size for k in self.asks[t]) for t in self.ask_prices]
+
         print("|  Id   |  Quantity  |    Price    |")
         print('====================================')
         if len(self.ask_prices) == 0:
@@ -57,8 +72,7 @@ class OrderBook:
 
         for i in reversed(self.ask_prices):
             for j in self.asks[i]:
-                print(f"|   {j.order_id}   |      {j.quantity}     |     {j.price}     |")
-
+                print(f"|   {j.order_id}   |      {self.ask_quantity[j.price][0]}     |     {j.price}     |")
         print('====================================')
         if len(self.bid_prices) == 0:
             print('                Empty             ')
@@ -85,7 +99,10 @@ if __name__ == '__main__':
               Order(0, 61.40, 25),
               Order(1, 61.91, 10),
               Order(0, 59.95, 25),
-              Order(1, 62.11, 15)]
+              Order(1, 62.11, 15),
+              Order(1, 62.11, 15),
+              Order(1, 62.11, 15)
+              ]
 
     for order in orders:
         ob.put_order(order)
