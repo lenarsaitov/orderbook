@@ -166,7 +166,7 @@ class OrderBook:
     def read_json(self):
         with open("data_file.json", "r") as f:
             text = json.load(f)
-            pprint(text)
+            return text
 
 class Order:
     def __init__(self, side, price, quantity):
@@ -181,14 +181,14 @@ if __name__ == '__main__':
     ob = OrderBook()
 
     orders = [Order(1, 62.55, 10),
-              Order(1, 62.00, 10),
+              Order(1, 62.32, 30),
+              Order(1, 62.00, 15),
               Order(1, 61.91, 10),
               Order(0, 62.05, 25),
-              Order(0, 61.57, 20),
-              Order(0, 61.40, 25),
+              Order(0, 61.85, 50),
               Order(0, 60.23, 5),
-              Order(0, 59.95, 25),
-              Order(0, 57.23, 20),
+              Order(0, 59.65, 20),
+              Order(0, 59.65, 60),
               ]
 
     for order in orders:
@@ -197,3 +197,5 @@ if __name__ == '__main__':
     print(ob.get_order(2))
     ob.present_orderbook_with_each_order()
 
+    ob.save_json(ob.snapshot_market())
+    pprint(ob.read_json())
