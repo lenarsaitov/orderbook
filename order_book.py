@@ -47,8 +47,6 @@ class OrderBook:
                 if index == j.order_id:
                     self.asks[i].remove(j)
 
-    def aggregation(self):
-        pass
 
     def present_orderbook_with_each_order(self):
         self.bid_prices = sorted(self.bids.keys(), reverse=True)
@@ -71,24 +69,32 @@ class OrderBook:
             for j in self.bids[i]:
                 print(f"|   {j.order_id}   |      {j.quantity}     |     {j.price}     |")
 
+    def aggregation_orders(self):
+        self.bid_prices = sorted(self.bids.keys(), reverse=True)
+        self.ask_prices = sorted(self.asks.keys())
+        self.bid_quantities = [sum(o.quantity for o in self.bids[p]) for p in self.bid_prices]
+        self.ask_quantities = [sum(o.quantity for o in self.asks[p]) for p in self.ask_prices]
+
     def output_data(self):
+        self.aggregation_orders()
         data = defaultdict(list)
-        dict_order = {}
-        for price in self.asks.keys():
-            dict_order['price'] = price
-            dict_order['quantity'] = 1
+
+        for i, price in reversed(list(enumerate(self.ask_prices))):
+            dict_order = {}
+            dict_order['price'] = self.ask_prices[i]
+            dict_order['quantity'] = self.ask_quantities[i]
             data['asks'].append(dict_order)
 
-        for price in self.bids.keys():
-            dict_order['price'] = price
-            dict_order['quantity'] = 1
+        for i, price in enumerate(self.bid_prices):
+            dict_order = {}
+            dict_order['price'] = self.bid_prices[i]
+            dict_order['quantity'] = self.bid_quantities[i]
             data['bids'].append(dict_order)
 
         data_json = json.dumps(data)
 
         with open("data_file.json", "w") as write_file:
             json.dump(data_json, write_file)
-
 
 class Order:
     def __init__(self, side, price, quantity):
