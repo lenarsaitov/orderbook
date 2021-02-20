@@ -1,5 +1,6 @@
 from collections import defaultdict
 import json
+from pprint import pprint
 
 class OrderBook:
     def __init__(self):
@@ -12,7 +13,7 @@ class OrderBook:
         self.asks = defaultdict(list)
 
         self.initial_order = []
-        self.spred = 0
+        self.spred = None
         self.order_id = 0
 
     def raise_order_id(self):
@@ -47,7 +48,6 @@ class OrderBook:
                 if index == j.order_id:
                     self.asks[i].remove(j)
 
-
     def present_orderbook_with_each_order(self):
         self.bid_prices = sorted(self.bids.keys(), reverse=True)
         self.ask_prices = sorted(self.asks.keys())
@@ -78,23 +78,37 @@ class OrderBook:
     def output_data(self):
         self.aggregation_orders()
         data = defaultdict(list)
+        asks_table = []
+        bids_table = []
 
         for i, price in reversed(list(enumerate(self.ask_prices))):
             dict_order = {}
             dict_order['price'] = self.ask_prices[i]
             dict_order['quantity'] = self.ask_quantities[i]
             data['asks'].append(dict_order)
+            asks_table.append([self.ask_prices[i], self.ask_quantities[i]])
 
         for i, price in enumerate(self.bid_prices):
             dict_order = {}
             dict_order['price'] = self.bid_prices[i]
             dict_order['quantity'] = self.bid_quantities[i]
             data['bids'].append(dict_order)
+            bids_table.append([self.bid_prices[i], self.bid_quantities[i]])
 
         data_json = json.dumps(data)
 
         with open("data_file.json", "w") as write_file:
             json.dump(data_json, write_file)
+
+        try:
+            return asks_table, bids_table
+        except:
+            pass
+
+    def read_json(self):
+        with open("data_file.json", "r") as f:
+            text = json.load(f)
+            pprint(text)
 
 class Order:
     def __init__(self, side, price, quantity):
@@ -137,3 +151,5 @@ if __name__ == '__main__':
 
     ob.present_orderbook_with_each_order()
     ob.output_data()
+    print("__")
+    ob.read_json()
