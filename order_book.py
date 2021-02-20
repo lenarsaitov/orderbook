@@ -36,7 +36,15 @@ class OrderBook:
             self.asks[order.price].append(order)
 
     def delete_order(self, index):
-        pass
+        for i in self.bids.keys():
+            for j in self.bids[i]:
+                if index == j.order_id:
+                    self.bids[i].remove(j)
+
+        for i in self.asks.keys():
+            for j in self.asks[i]:
+                if index == j.order_id:
+                    self.asks[i].remove(j)
 
     def present_orderbook(self):
         pass
@@ -66,3 +74,25 @@ if __name__ == '__main__':
 
     print(ob.asks)
     print(ob.bids)
+
+    for i in ob.bids.keys():
+        for j in ob.bids[i]:
+            print(j.order_id)
+    print("__")
+    for i in ob.asks.keys():
+        for j in ob.asks[i]:
+            print(j.order_id)
+
+    print("____")
+
+    ob.delete_order(8)
+    ob.delete_order(1)
+    ob.delete_order(4)
+
+    for i in ob.bids.keys():
+        for j in ob.bids[i]:
+            print(j.order_id)
+    print("__")
+    for i in ob.asks.keys():
+        for j in ob.asks[i]:
+            print(j.order_id)
