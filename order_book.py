@@ -1,4 +1,5 @@
 from collections import defaultdict
+import json
 
 class OrderBook:
     def __init__(self):
@@ -46,25 +47,14 @@ class OrderBook:
                 if index == j.order_id:
                     self.asks[i].remove(j)
 
-    def present_orderbook(self):
+    def aggregation(self):
+        pass
+
+    def present_orderbook_with_each_order(self):
         self.bid_prices = sorted(self.bids.keys(), reverse=True)
         self.ask_prices = sorted(self.asks.keys())
 
-        for price in self.bid_prices:
-            sum_order_this_price = 0
-            for orders in self.bids[price]:
-                sum_order_this_price += orders.quantity
-            self.bid_quantity[price].append(sum_order_this_price)
-
-        for price in self.ask_prices:
-            sum_order_this_price = 0
-            for orders in self.asks[price]:
-                sum_order_this_price += orders.quantity
-            self.ask_quantity[price].append(sum_order_this_price)
-
-        # self.bid_quantities = [sum(k.size for k in self.bids[t]) for t in self.bid_prices]
-        # self.ask_quantities = [sum(k.size for k in self.asks[t]) for t in self.ask_prices]
-
+        print()
         print("|  Id   |  Quantity  |    Price    |")
         print('====================================')
         if len(self.ask_prices) == 0:
@@ -72,7 +62,7 @@ class OrderBook:
 
         for i in reversed(self.ask_prices):
             for j in self.asks[i]:
-                print(f"|   {j.order_id}   |      {self.ask_quantity[j.price][0]}     |     {j.price}     |")
+                print(f"|   {j.order_id}   |      {j.quantity}     |     {j.price}     |")
         print('====================================')
         if len(self.bid_prices) == 0:
             print('                Empty             ')
@@ -80,6 +70,25 @@ class OrderBook:
         for i in self.bid_prices:
             for j in self.bids[i]:
                 print(f"|   {j.order_id}   |      {j.quantity}     |     {j.price}     |")
+
+    def output_data(self):
+        data = defaultdict(list)
+        dict_order = {}
+        for price in self.asks.keys():
+            dict_order['price'] = price
+            dict_order['quantity'] = 1
+            data['asks'].append(dict_order)
+
+        for price in self.bids.keys():
+            dict_order['price'] = price
+            dict_order['quantity'] = 1
+            data['bids'].append(dict_order)
+
+        data_json = json.dumps(data)
+
+        with open("data_file.json", "w") as write_file:
+            json.dump(data_json, write_file)
+
 
 class Order:
     def __init__(self, side, price, quantity):
@@ -120,16 +129,5 @@ if __name__ == '__main__':
 
     print("____")
 
-    # ob.delete_order(8)
-    # ob.delete_order(1)
-    # ob.delete_order(4)
-
-    # for i in ob.bids.keys():
-    #     for j in ob.bids[i]:
-    #         print(j.order_id)
-    # print("__")
-    # for i in ob.asks.keys():
-    #     for j in ob.asks[i]:
-    #         print(j.order_id)
-
-    ob.present_orderbook()
+    ob.present_orderbook_with_each_order()
+    ob.output_data()

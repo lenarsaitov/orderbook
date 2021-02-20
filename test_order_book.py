@@ -15,6 +15,9 @@ def prepare_data(sells, buys, unique_sells = None, unique_buys = None):
     if not unique_buys:
         unique_buys = buys
 
+    asks = []
+    bids = []
+
     k = 0
     core, remain_main, quantity = random_order()
     remain = 0
@@ -22,6 +25,7 @@ def prepare_data(sells, buys, unique_sells = None, unique_buys = None):
         if k < unique_sells:
             core_some, remain_again, quantity = random_order()
             orders.append(Order(1, round(core + remain, 1), quantity))
+            asks.append((round(core + remain, 1), quantity))
             remain += remain_again
             k += 1
         else:
@@ -34,25 +38,20 @@ def prepare_data(sells, buys, unique_sells = None, unique_buys = None):
             core_some, remain_again, quantity = random_order()
             remain += remain_again
             orders.append(Order(0, round(core - remain, 1), quantity))
+            bids.append((round(core - remain, 1), quantity))
             k += 1
         else:
             orders.append(Order(0, round(core - remain, 1), quantity))
-    return orders
+
+    return orders, asks, bids
 
 def test_sorting_when_all_price_of_orders_are_different():
     ob = OrderBook()
 
-    orders = prepare_data(5, 10)
+    orders, asks, bids  = prepare_data(5, 10)
     for order in orders:
         ob.put_order(order)
     ob.present_orderbook()
-
-    print("__")
-    for order in orders:
-        print(order.price)
-
-def test_sorting_when_have_reiterated_price_of_orders():
-    pass
 
 def test_get_order():
     pass
